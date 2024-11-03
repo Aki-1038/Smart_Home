@@ -545,6 +545,9 @@ CREATE TABLE device (
 ### 登入頁面
 
 http://192.168.68.115/
+
+http://116.118.152.93/index.html
+
 ```
 <!DOCTYPE html>
 <html lang="zh-TW">
