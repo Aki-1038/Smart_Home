@@ -1,6 +1,13 @@
 資訊管理實務專題製作 
 ===
+
+
+
+---
+
 ## 主題：智慧家庭
+![_f4f66213-171e-41da-b2d7-6647e1ddef62](https://hackmd.io/_uploads/SJH-IvN-Jx.jpg)
+
 
 ---
 
@@ -17,7 +24,7 @@
 | 2024/09/25 | 購買參考書       |ESP32物聯網基礎10門課 | |
 | 2024/10/01 | 購買ESP32  |  型號：NodeMCU-32 |https://www.taiwaniot.com.tw/product/nodemcu-32s%E6%93%B4%E5%B1%95%E6%9D%BF-esp32-lua-wifi-%E6%93%B4%E5%B1%95%E6%9D%BF-%E6%94%AF%E6%8F%B4dc%E9%9B%BB%E6%BA%90%E4%BE%9B%E9%9B%BB/|
 | 2024/10/02 | 購買參考書       |Django 5企業級Web應用開發實戰（視頻教學版） | |
-| 2024/10/07 |申請Github Copilot       | | |
+| 2024/10/06 |申請Github Copilot       | | |
 | 2024/10/07 |論文整理            |上傳論文至NotebookLM，整理論文筆記 |  |
 | 2024/10/08 |  arduino       |開發程式下載、安裝、開發環境學習 | |
 | 2024/10/08 | IO 測試           | <span class="blue">Blinking an LED With ESP32</span>|
@@ -25,7 +32,7 @@
 | 2024/10/08 | NTPClient       |連接到時間伺服器的 NTPClient 從 NTP 伺服器取得時間並保持同步。 | |
 | 2024/10/08 | MySQL_Connector_Arduino       |將 Arduino 專案直接連接到 MySQL 伺服器 | |
 | 2024/10/17 |test_mysql.py        |測試mysql 連線 | |
-| 2024/10/ |        | | |
+| 2024/10/24 |login.html        | | |
 | 2024/10/ |        | | |
 	
 ---
@@ -36,6 +43,8 @@
 ### 1. 專題背景與動機
 
 #### a. 智慧家庭的發展
+智慧型家庭，或稱智慧型家庭、智慧型家居（smart home），指建築自動化的家庭，而家庭自動化（英語：home automation或domotics）則指實現智慧型家庭的過程。家庭自動化系統可以監控和/或控制燈光、窗戶、溫濕度等家庭設定，還可能可以控制家庭出入和觸發警報器以保護家庭。家庭裝置會在接連網際網路後成為物聯網中的重要部分。
+典型的家庭自動化系統會連接至智慧型家庭中心（或稱閘道器）。這允許人們使用使用者介面控制家庭自動化系統，這個使用者介面可能會是牆壁上的終端、智慧型手機、個人電腦或者是通過網路遠端存取的網頁介面。
 隨著物聯網 (IoT) 技術的發展，智慧家庭逐漸進入主流市場。智慧家庭系統可以自動化控制家庭中的設備，提升生活便利性和節能效益。但許多商業系統昂貴且不具彈性，因此藉由這個課程開發一個基於開源硬體和軟體的低成本之智慧家庭系統。
 
 ---
@@ -504,12 +513,17 @@ Current date: 2024-10-8
 
 
 
+---
 
 網頁設計
+login
+![image](https://hackmd.io/_uploads/HJJriIN-1e.png)
+
 ===
+
 建立智慧家庭操作網頁，並使用 **Arduino** 為每個 **NodeMCU-32S** 設計控制程式。以下是具體步驟：
 
-### 1. **資料庫設計（MySQL）**
+### **資料庫設計（MySQL）**
 
 設計一個 MySQL 資料庫來儲存來自各 NodeMCU-32S 的感測器數據與控制狀態。根據需求，資料庫中應包含一個 `device` 資料表來管理設備狀態。
 
@@ -528,425 +542,67 @@ CREATE TABLE device (
     last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
+### 登入頁面
 
-### 2. **Django 設定**
-
-#### a. **建立 Django 專案與應用**
-
-首先，啟動 Django 專案並配置資料庫連接。
-
-```bash
-django-admin startproject smart_home_project
-cd smart_home_project
-python manage.py startapp control_panel
+http://192.168.68.115/
 ```
-
-在 `settings.py` 中配置 MySQL 資料庫連接：
-
-```python
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'smart_home',
-        'USER': 'your_mysql_user',
-        'PASSWORD': 'your_mysql_password',
-        'HOST': 'localhost',
-        'PORT': '3306',
-    }
-}
-```
-
-#### b. **建立 Django 模型**
-
-在 `models.py` 中，設置對應的設備模型：
-
-```python
-from django.db import models
-
-class Device(models.Model):
-    device_name = models.CharField(max_length=50)
-    location = models.CharField(max_length=50)
-    sensor_type = models.CharField(max_length=50)
-    sensor_value = models.FloatField()
-    control_status = models.BooleanField(default=False)
-    last_updated = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f"{self.device_name} ({self.location})"
-```
-
-然後執行遷移命令：
-
-```bash
-python manage.py makemigrations
-python manage.py migrate
-```
-
-#### c. **建立操作網頁與 API**
-
-在 `views.py` 中，設計一個簡單的 API 來處理設備狀態的更新和顯示。
-
-```python
-from django.shortcuts import render
-from django.http import JsonResponse
-from .models import Device
-
-def device_status(request):
-    devices = Device.objects.all()
-    return render(request, 'device_status.html', {'devices': devices})
-
-def update_device(request, device_id):
-    device = Device.objects.get(id=device_id)
-    new_status = request.POST.get('control_status')
-    device.control_status = bool(new_status)
-    device.save()
-    return JsonResponse({'status': 'success'})
-```
-
-在 `urls.py` 中配置路由：
-
-```python
-from django.urls import path
-from . import views
-
-urlpatterns = [
-    path('status/', views.device_status, name='device_status'),
-    path('update/<int:device_id>/', views.update_device, name='update_device'),
-]
-```
-
-#### d. **前端操作界面**
-
-使用 HTML 與 JavaScript 來建立即時控制介面，顯示各設備的狀態並讓使用者可以進行控制。
-
-```html
-<!-- device_status.html -->
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Smart Home Control Panel</title>
-</head>
-<body>
-    <h1>Smart Home Control Panel</h1>
-    <div>
-        {% for device in devices %}
-            <p>{{ device.device_name }} ({{ device.location }}) - Sensor: {{ device.sensor_value }} 
-            <button onclick="toggleDevice({{ device.id }}, {{ device.control_status }})">
-                {{ device.control_status|yesno:"ON,OFF" }}
-            </button></p>
-        {% endfor %}
-    </div>
-
-    <script>
-        function toggleDevice(device_id, current_status) {
-            const new_status = current_status ? 0 : 1;
-            fetch(`/update/${device_id}/`, {
-                method: 'POST',
-                body: JSON.stringify({ control_status: new_status }),
-                headers: { 'Content-Type': 'application/json' },
-            }).then(response => response.json()).then(data => {
-                if (data.status === 'success') {
-                    location.reload();
-                }
-            });
-        }
-    </script>
-</body>
-</html>
-```
-
-### 3. **Arduino 控制程式（NodeMCU-32S）**
-
-每個 NodeMCU-32S 模組會根據不同的功能需求撰寫控制程式。以頂樓水塔液位偵測為例：
-
-```cpp
-#include <WiFi.h>
-#include <HTTPClient.h>
-
-const char* ssid = "your_wifi_ssid";
-const char* password = "your_wifi_password";
-const char* serverName = "http://192.168.68.115/update/";
-
-int sensorPin = A0; // 液位感測器的引腳
-int sensorValue = 0;
-
-void setup() {
-  Serial.begin(115200);
-  WiFi.begin(ssid, password);
-  
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-    Serial.println("Connecting to WiFi...");
-  }
-  Serial.println("Connected to WiFi");
-}
-
-void loop() {
-  sensorValue = analogRead(sensorPin);
-  if (sensorValue < 500) {
-    sendData(1);  // 水位過低，發送狀態
-  } else {
-    sendData(0);  // 水位正常
-  }
-  delay(10000);  // 每10秒檢測一次
-}
-
-void sendData(int status) {
-  if (WiFi.status() == WL_CONNECTED) {
-    HTTPClient http;
-    String url = String(serverName) + "1";  // 假設設備ID是1
-    http.begin(url);
-    http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-    
-    String postData = "control_status=" + String(status);
-    int httpResponseCode = http.POST(postData);
-    
-    if (httpResponseCode > 0) {
-      String response = http.getString();
-      Serial.println(httpResponseCode);
-      Serial.println(response);
-    }
-    http.end();
-  }
-}
-```
-
-此程式每 10 秒讀取液位感測器數據，並根據狀態上傳至伺服器。
-
-### 4. **功能擴展**
-
-根據不同功能，例如 PM2.5 偵測、溫度偵測與冷氣控制，依此模組撰寫對應的 Arduino 程式來控制繼電器或紅外線發射器，並在 Django 網頁介面中實現控制與即時監控功能。
-
-
-登入頁面設計
-===
-使用 **Python**, **Django**, **MySQL** 和 **Synology NAS** 架設登入系統的步驟，並在不同裝置上使用響應式動態網頁設計技術進行操作。
-
-### 1. **系統架構概述**
-- **伺服器**: Synology DS920+ NAS
-- **IP 設定**:
-  - NAS IP: `192.168.68.115`
-  - NodeMCU-32S IP 範圍: `192.168.68.116 - 192.168.68.123`
-  - 對外網路網址: `aki920p.myds.me`
-- **系統使用技術**:
-  - **後端**: Python, Django, MySQL
-  - **前端**: HTML, CSS, JavaScript，採用響應式設計
-
-### 2. **資料庫設計**
-
-首先在 MySQL 中創建一個名為 `db_25` 的資料庫，並創建 `user` 資料表來儲存使用者帳號和密碼。
-
-```sql
-CREATE DATABASE db_25;
-
-USE db_25;
-
-CREATE TABLE user (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL
-);
-```
-
-### 3. **Django 專案設定**
-
-#### a. **建立 Django 專案與應用**
-
-```bash
-django-admin startproject smart_home_system
-cd smart_home_system
-python manage.py startapp users
-```
-
-#### b. **設定資料庫連接**
-
-在 `settings.py` 中，配置 MySQL 資料庫：
-
-```python
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'db_25',
-        'USER': 'your_mysql_user',
-        'PASSWORD': 'your_mysql_password',
-        'HOST': 'localhost',
-        'PORT': '3306',
-    }
-}
-```
-
-#### c. **使用者模型**
-
-在 `users/models.py` 中創建一個用來管理使用者登入的模型：
-
-```python
-from django.db import models
-
-class User(models.Model):
-    username = models.CharField(max_length=50, unique=True)
-    password = models.CharField(max_length=255)
-    
-    def __str__(self):
-        return self.username
-```
-
-運行資料庫遷移：
-
-```bash
-python manage.py makemigrations
-python manage.py migrate
-```
-
-### 4. **登入邏輯與視圖**
-
-#### a. **表單與驗證**
-
-在 `users/views.py` 中創建登入邏輯：
-
-```python
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .models import User
-from django.utils import timezone
-import time
-
-failed_attempts = {}  # 記錄失敗次數的字典
-
-def login_view(request):
-    global failed_attempts
-    
-    if request.method == "POST":
-        username = request.POST['username']
-        password = request.POST['password']
-        
-        # 取得當前使用者IP地址
-        user_ip = request.META.get('REMOTE_ADDR')
-        
-        # 判斷該IP是否已被鎖定
-        if user_ip in failed_attempts and failed_attempts[user_ip]['count'] >= 3:
-            time_left = 180 - (timezone.now() - failed_attempts[user_ip]['last_failed']).total_seconds()
-            if time_left > 0:
-                messages.error(request, f"輸入錯誤過多，請等待 {int(time_left)} 秒後再嘗試")
-                return render(request, 'login.html')
-            else:
-                del failed_attempts[user_ip]  # 解除鎖定
-        
-        # 驗證使用者
-        try:
-            user = User.objects.get(username=username)
-            if user.password == password:
-                return redirect('dashboard')  # 成功進入控制頁面
-            else:
-                raise User.DoesNotExist
-        except User.DoesNotExist:
-            messages.error(request, "帳號或密碼錯誤")
-            
-            # 更新失敗次數
-            if user_ip not in failed_attempts:
-                failed_attempts[user_ip] = {'count': 1, 'last_failed': timezone.now()}
-            else:
-                failed_attempts[user_ip]['count'] += 1
-                failed_attempts[user_ip]['last_failed'] = timezone.now()
-            
-            if failed_attempts[user_ip]['count'] >= 3:
-                messages.error(request, "輸入資料錯誤，已達三次限制，禁止登入 3 分鐘")
-                
-    return render(request, 'login.html')
-
-def dashboard(request):
-    return render(request, 'index2.html')
-```
-
-#### b. **URL 路由**
-
-在 `users/urls.py` 中設定路由：
-
-```python
-from django.urls import path
-from . import views
-
-urlpatterns = [
-    path('login/', views.login_view, name='login'),
-    path('dashboard/', views.dashboard, name='dashboard'),
-]
-```
-
-在 `smart_home_system/urls.py` 中包含這個應用的路由：
-
-```python
-from django.contrib import admin
-from django.urls import path, include
-
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('users/', include('users.urls')),
-]
-```
-
-#### c. **登入頁面 (login.html)**
-
-```html
-<!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>智慧家庭系統登入</title>
-    <style>
-        /* 簡單的響應式樣式 */
-        body { font-family: Arial, sans-serif; }
-        .login-container { width: 100%; max-width: 400px; margin: 50px auto; padding: 20px; border: 1px solid #ccc; }
-        input[type="text"], input[type="password"] { width: 100%; padding: 10px; margin: 5px 0; }
-        input[type="submit"] { width: 100%; padding: 10px; background-color: #4CAF50; color: white; }
-        .message { color: red; }
-    </style>
+    <title>Login</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="login-container">
-        <h2>歡迎使用智慧家庭系統</h2>
-        {% if messages %}
-            <div class="message">
-                {% for message in messages %}
-                    <p>{{ message }}</p>
-                {% endfor %}
+    <h1 class="text-center">歡迎使用智慧家庭系統 </h1>  
+    <div class="container">`
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-center">Login</h3>
+                    </div>
+                    <div class="card-body">
+                        <form action="login.php" method="post">
+                            <div class="form-group">
+                                <label for="username">Username</label>
+                                <input type="text" id="username" name="username" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" id="password" name="password" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Login</button>
+                        </form>
+                    </div>
+                </div>
             </div>
-        {% endif %}
-        <form method="POST">
-            {% csrf_token %}
-            <label for="username">使用者帳號：</label>
-            <input type="text" id="username" name="username" required>
-
-            <label for="password">密碼：</label>
-            <input type="password" id="password" name="password" required>
-
-            <input type="submit" value="登入">
-        </form>
+        </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
 ```
 
-### 5. **部署在 Synology DS920+ 上**
+### php
 
-1. 在 NAS 上安裝 **Web Station** 和 **MariaDB**，並配置 Python 環境來運行 Django 專案。
-2. 使用 DSM 的 **Reverse Proxy** 功能，將內部服務暴露在 `aki920p.myds.me`。
-3. 在 NAS 的網頁伺服器上配置 Django 專案，並確保所有依賴項已安裝。
+---
 
-### 6. **動態響應式設計**
-
-登入頁面使用了基本的 CSS，並且設計為響應式，以便在不同設備上都能適應螢幕大小。
 
 
 結案報告框架
 ===
+
 ### 1. Introduction (引言)
 
 #### a. 背景說明
 介紹智慧家庭系統的重要性，隨著物聯網 (IoT) 的發展，家居自動化已成為提升生活品質的關鍵。提到此專題的目的是運用 NodeMCU-32S 來實現不同環境下的自動化控制和監控，如水塔液位、空氣品質、溫度等。
 
 #### b. 專題目標
-目標是透過使用多個 NodeMCU-32S 裝置，整合感測器和控制器，並結合 Python 與 Django 建構的網站介面來遠端監控與操作。最終達成一個具備多種智慧家庭功能的整合系統。
+目標是透過使用多個 NodeMCU-32S 裝置，整合感測器和控制器， 建構網站介面來遠端監控與操作。最終達成一個具備多種智慧家庭功能的整合系統。
 
 ### 2. Methods (方法)
 
@@ -956,7 +612,7 @@ urlpatterns = [
 #### b. 軟體設計
 說明軟體部分的設計：
 1. 使用 Arduino IDE 來編寫 NodeMCU-32S 的程式。
-2. 使用 Python 和 Django 來建構網頁後端及使用者操作介面。資料會透過 Wi-Fi 傳送到 NAS 上的伺服器，並儲存到資料庫中。
+2. 建構網頁後端及使用者操作介面。資料會透過 Wi-Fi 傳送到 NAS 上的伺服器，並儲存到資料庫中。
 
 #### c. 資料處理與通訊
 解釋 ESP32S 如何通過 Wi-Fi 連接到伺服器、如何處理感測器的數據、並透過 Django API 來更新數據庫。特別是如何使用 LINEBOT 來通知使用者異常情況，如水塔液位過低或 PM2.5 指數過高。
@@ -967,7 +623,7 @@ urlpatterns = [
 展示各 NodeMCU-32S 的具體功能，如水位偵測、PM2.5 偵測與排氣控制、溫度偵測與冷氣控制。這裡可以列舉測試過程中不同情境下系統的反應及性能表現。
 
 #### b. 整合平台效果
-展示 Django 網頁後台介面，說明用戶如何透過網頁檢視與控制各設備的運作狀況，並描述使用者透過 LINEBOT 接收即時通知的效果。
+展示網頁後台介面，說明用戶如何透過網頁檢視與控制各設備的運作狀況，並描述使用者透過 LINEBOT 接收即時通知的效果。
 
 #### c. 效能與可靠性
 總結測試中系統的穩定性、反應速度及可靠性，並列出一些具體測試數據或報告圖表，例如溫度控制的準確性或液位偵測的反應時間。
