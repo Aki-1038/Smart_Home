@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-Tw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>家庭自動化控制系統</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        #led {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+    </style>
+    <script>
+        function updateLED() {
+            fetch('Liquid_level_sensor.php')
+                .then(response => response.text())
+                .then(status => {
+                    const led = document.getElementById('led');
+                    if (status.trim() === 'HIGH') {
+                        led.style.backgroundColor = 'red';
+                    } else {
+                        led.style.backgroundColor = 'green';
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        setInterval(updateLED, 1000); // 每秒更新一次
+    </script>
+
+
+</head>
+<body>
+
+    <!-- 頁首 -->
+    <header class="bg-primary text-white text-center py-3">
+        <h1>家庭自動化控制系統</h1>
+    </header>
+    <!-- 選單 -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="navbar-nav">
+                <a class="btn btn-outline-secondary  mx-1" href="/ha/pages/home-4.html">全部</a>
+                <a class="btn btn-outline-secondary  mx-1" href="/ha/pages/ha_1.html">一樓</a>
+                <a class="btn btn-outline-secondary  mx-1" href="/ha/pages/ha_2.html"">二樓</a>
+                <a class="btn btn-outline-secondary mx-1" href="/ha/pages/ha_3.html"">三樓</a>
+                <a class="btn btn-outline-secondary  mx-1" href="/ha/pages/ha_4.html"">四樓</a>
+                <a class="btn btn-success mx-1" href="/ha/pages/ha_5.html"">頂樓</a>
+            </div>
+        </div>
+    </nav>
+    <!-- 主內容區 -->
+    <main class="container my-4">
+        <h2>歡迎來到家庭自動化控制系統</h2>
+        <p>這裡是家庭自動化控制系統的網頁，您可以透過這個網頁控制家中的設備，並且查看設備的狀態。</p>
+        <h1>ESP32 GPIO狀態</h1>
+        <div id="led"></div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>ESP模組</th>
+                    <th>位置</th>
+                    <th>功能描述</th>
+                    <th>輸入信號</th>
+                    <th>輸出信號</th>
+                    <th>說明</th>
+                    <th>IP address</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>NodeMCU-32S</td>
+                    <td>頂樓</td>
+                    <td>頂樓水塔液位偵測</td>
+                    <td>液位感測器 * 1個</td>
+                    <td></td>
+                    <td>當水塔的水位太低，液位計輸出信號為LOW, NodeMCU-32S透過LINEBOT通知使用者，收到通知後透過aki920p.myDS.me的專題製作網頁檢視信號的狀態</td>
+                    <td>192.168.68.116</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>NodeMCU-32S</td>
+                    <td>1樓</td>
+                    <td>1樓廚房PM2.5偵測及抽油煙機開關控制</td>
+                    <td>PM2.5感測器* 1個</td>
+                    <td>繼電器 * 3個</td>
+                    <td>當感測器偵測到空氣品質PM2.5 數值 > 10時，3個繼電器每隔1秒依序起動使接點導通讓排油煙機啟動，將室內的空氣排到戶戶外, NodeMCU-32S透過LINEBOT通知使用者，收到通知後透過aki920p.myDS.me的專題製作網頁檢視信號的狀態</td>
+                    <td>192.168.68.117</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>NodeMCU-32S</td>
+                    <td>1樓</td>
+                    <td>1樓客廳溫度偵測及冷氣開關機控制</td>
+                    <td>溫度感測器 * 1個</td>
+                    <td>紅外線發射器 * 1個</td>
+                    <td>功能1：使用者可設定時間，當定時器功能啟動狀態時，讀取溫度感測器溫度，若室內溫度高於28℃時，紅外線發射器輸出啟動冷氣電源的搖控器編碼，打開冷氣。功能2：使用者可透過網頁的開/關控制按鈕遠端控制冷氣</td>
+                    <td>192.168.68.118</td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+
+    <!-- 頁尾 -->
+    <footer class="bg-dark text-white text-center py-3">
+        <p>© 2024 智慧家庭控制系統. 版權所有.</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

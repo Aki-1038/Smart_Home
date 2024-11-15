@@ -1,0 +1,39 @@
+<!DOCTYPE html> <!-- 定義文件類型為 HTML5 -->
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+<title>W3.CSS</title> <!-- 文件標題 -->
+<meta name="viewport" content="width=device-width, initial-scale=1"> <!-- 設置視窗寬度為裝置寬度，初始縮放比例為 1 -->
+<link rel="stylesheet" href="/lib/w3.css"> <!-- 引入 W3.CSS 樣式表 -->
+<style>
+.mySlides {display:none;} <!-- 定義 .mySlides 類別的樣式，預設為不顯示 -->
+</style>
+</head> <!-- 結束文件標頭 -->
+<body> <!-- 開始文件主體 -->
+
+<div class="w3-content w3-section" style="max-width:500px"> <!-- 定義一個最大寬度為 500px 的容器 -->
+    <img class="mySlides" src="/ha/images/1.jpg" style="width:100%"> <!-- 第一張幻燈片圖片，寬度 100% -->
+    <img class="mySlides" src="/ha/images/2.jpg" style="width:100%"> <!-- 第二張幻燈片圖片，寬度 100% -->
+    <img class="mySlides" src="/ha/images/3.jpg" style="width:100%"> <!-- 第三張幻燈片圖片，寬度 100% -->
+</div>
+
+<script>
+var myIndex = 0; <!-- 初始化幻燈片索引 -->
+carousel(); <!-- 呼叫 carousel 函數 -->
+
+function carousel() { <!-- 定義 carousel 函數 -->
+        var i; <!-- 宣告變數 i -->
+        var x = document.getElementsByClassName("mySlides"); <!-- 獲取所有 .mySlides 類別的元素 -->
+        for (i = 0; i < x.length; i++) { <!-- 遍歷所有 .mySlides 元素 -->
+             x[i].style.display = "none"; <!-- 將每個 .mySlides 元素設置為不顯示 -->
+        }
+        myIndex++; <!-- 增加索引 -->
+        if (myIndex > x.length) {myIndex = 1} <!-- 如果索引超過元素數量，重置為 1 -->
+        x[myIndex-1].style.display = "block"; <!-- 顯示當前索引對應的幻燈片 -->
+        setTimeout(carousel, 2000); <!-- 每 2 秒重新呼叫 carousel 函數 -->
+}
+</script>
+
+</body> <!-- 結束文件主體 -->
+</html> <!-- 結束 HTML 文件 -->
+

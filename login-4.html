@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登入頁面</title>
+    <!-- 引入 Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <h2 class="text-center">登入</h2>
+                <!-- 登入表單 -->
+                <form id="loginForm" method="post" action="/ha/pages/login-4.php">
+                    <div class="form-group">
+                        <label for="username">帳號</label>
+                        <!-- 帳號輸入框 -->
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">密碼</label>
+                        <!-- 密碼輸入框 -->
+                        <input type="password" class="form-control" id="password" name="password" required>
+                        <!-- 顯示密碼選項 -->
+                        <input type="checkbox" id="showPassword"> 顯示密碼
+                    </div>
+                    <!-- 登入按鈕 -->
+                    <button type="submit" class="btn btn-primary btn-block">登入</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 顯示/隱藏密碼功能
+        document.getElementById('showPassword').addEventListener('change', function() {
+            var passwordField = document.getElementById('password');
+            if (this.checked) {
+                passwordField.type = 'text'; // 顯示密碼
+            } else {
+                passwordField.type = 'password'; // 隱藏密碼
+            }
+        });
+    </script>
+</body>
+</html>

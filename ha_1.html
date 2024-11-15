@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>家庭自動化控制系統</title>
+    <!-- 引入 Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .mySlides {display:none;} <!-- 定義 .mySlides 類別的樣式，預設為不顯示 -->
+        </style>
+</head>
+<body>
+
+    <!-- 頁首 -->
+    <header class="bg-primary text-white text-center py-3">
+        <h1>家庭自動化控制系統</h1>
+    </header>
+
+
+<div class="w3-content w3-section" style="max-width:500px"> <!-- 定義一個最大寬度為 500px 的容器 -->
+    <img class="mySlides" src="/ha/images/1.jpg" style="width:100%"> <!-- 第一張幻燈片圖片，寬度 100% -->
+    <img class="mySlides" src="/ha/images/2.jpg" style="width:100%"> <!-- 第二張幻燈片圖片，寬度 100% -->
+    <img class="mySlides" src="/ha/images/3.jpg" style="width:100%"> <!-- 第三張幻燈片圖片，寬度 100% -->
+</div>
+
+<script>
+var myIndex = 0; <!-- 初始化幻燈片索引 -->
+carousel(); <!-- 呼叫 carousel 函數 -->
+
+function carousel() { <!-- 定義 carousel 函數 -->
+        var i; <!-- 宣告變數 i -->
+        var x = document.getElementsByClassName("mySlides"); <!-- 獲取所有 .mySlides 類別的元素 -->
+        for (i = 0; i < x.length; i++) { <!-- 遍歷所有 .mySlides 元素 -->
+             x[i].style.display = "none"; <!-- 將每個 .mySlides 元素設置為不顯示 -->
+        }
+        myIndex++; <!-- 增加索引 -->
+        if (myIndex > x.length) {myIndex = 1} <!-- 如果索引超過元素數量，重置為 1 -->
+        x[myIndex-1].style.display = "block"; <!-- 顯示當前索引對應的幻燈片 -->
+        setTimeout(carousel, 2000); <!-- 每 2 秒重新呼叫 carousel 函數 -->
+}
+</script>
+
+    <!-- 選單 -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="navbar-nav">
+                <!-- 導航按鈕 -->
+                <a class="btn btn-outline-secondary mx-1" href="/ha/pages/home-4.html">全部</a>
+                <a class="btn btn-success mx-1" href="/ha/pages/ha_1.html">一樓</a>
+                <a class="btn btn-outline-secondary mx-1" href="/ha/pages/ha_2.html">二樓</a>
+                <a class="btn btn-outline-secondary mx-1" href="/ha/pages/ha_3.html">三樓</a>
+                <a class="btn btn-outline-secondary mx-1" href="/ha/pages/ha_4.html">四樓</a>
+                <a class="btn btn-outline-secondary mx-1" href="/ha/pages/ha_5.html">頂樓</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主內容區 -->
+    <main class="container my-4"></main>
+        <h2>歡迎來到家庭自動化控制系統</h2>
+        <h3>一樓</h3>
+        <div class="list-group">
+            <!-- 一樓房間連結 -->
+            <a href="/ha/pages/ha_1.html" class="list-group-item list-group-item-action">客廳</a>
+            <a href="/ha/pages/ha_1.html" class="list-group-item list-group-item-action">廚房</a>
+            <a href="/ha/pages/ha_1.html" class="list-group-item list-group-item-action">廁所</a>
+        </div>
+        <br>
+        <!-- 一樓設備表格 -->
+        <table class="table table-bordered">    
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>ESP模組</th>
+                    <th>位置</th>
+                    <th>功能描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>ESP-01</td>
+                    <td>客廳</td>
+                    <td>感測溫溼度</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>ESP-02</td>
+                    <td>廚房</td>
+                    <td>感測溫溼度</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>ESP-03</td>
+                    <td>廁所</td>
+                    <td>感測溫溼度</td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+
+    <!-- 頁尾 -->
+    <footer class="bg-dark text-white text-center py-3"></footer>
+        <p>© 2024 智慧家庭控制系統. 版權所有.</p>
+    </footer>
+
+    <!-- 引入 jQuery, Popper.js, 和 Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
