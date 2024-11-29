@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <title>即時人數監控</title>
+    <meta charset="UTF-8">
+
+    <style>
+        body {
+            font-family: '微軟正黑體', Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .video-container {
+            margin: 20px 0;
+            position: relative;
+        }
+        .video-container img {
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+        .count-display {
+            font-size: 28px;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .green {
+            color: #4CAF50;
+            background-color: #E8F5E9;
+        }
+        .red {
+            color: #F44336;
+            background-color: #FFEBEE;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>即時人數監控系統</h1>
+        
+        <div class="video-container">
+            <img src="{{ url_for('video_feed') }}" width="640" height="480">
+        </div>
+        
+        <div class="count-display" id="countDisplay">
+            載入中...
+        </div>
+    </div>
+
+    <script>
+        function updateCount() {
+            fetch('/get_count')
+                .then(response => response.json())
+                .then(data => {
+                    const count = data.count;
+                    const display = document.getElementById('countDisplay');
+                    display.textContent = `目前人數：${count} 人`;
+                    display.className = 'count-display ' + (count === 0 ? 'green' : 'red');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('countDisplay').textContent = '連線錯誤';
+                });
+        }
+
+        // 頁面載入時立即更新一次
+        updateCount();
+        // 之後每秒更新一次人數
+        setInterval(updateCount, 1000);
+    </script>
+</body>
+</html>
